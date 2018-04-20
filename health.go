@@ -12,7 +12,7 @@ type HealthCheckResponse struct {
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	response := HealthCheckResponse{
-		Message: "Yep! I am up!",
+		Message: "OK",
 	}
 	json.NewEncoder(w).Encode(response)
 	return

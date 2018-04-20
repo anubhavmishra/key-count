@@ -29,16 +29,17 @@ func main() {
 		redisAddr = "localhost:6379"
 	}
 	var redisPassword = os.Getenv("REDIS_PASSWORD")
+	key := "links:"
 
 	// Create redis client
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
-		Password: redisPassword, // no password set
-		DB:       0,             // use default DB
+		Password: redisPassword,
+		DB:       0, // use default DB
 	})
 
 	mux := http.NewServeMux()
-	mux.Handle("/", KeyCountHandler(redisClient))
+	mux.Handle("/", KeyCountHandler(redisClient, key))
 	mux.HandleFunc("/healthz", HealthCheck)
 
 	httpServer := manners.NewServer()

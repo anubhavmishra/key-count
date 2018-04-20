@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -14,6 +15,7 @@ type KeyCountResponse struct {
 
 type keyCountHandler struct {
 	RedisClient *redis.Client
+	KeyName     string
 }
 
 func (g *keyCountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +23,7 @@ func (g *keyCountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var count int
 
 	// Get key count
-	redisResponse := g.RedisClient.Keys("links:*")
+	redisResponse := g.RedisClient.Keys(fmt.Sprintf("%s*", g.KeyName))
 	results, err := redisResponse.Result()
 	if err != nil {
 		log.Printf("Failed to get keys from redis: %v", err)
@@ -36,8 +38,9 @@ func (g *keyCountHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func KeyCountHandler(redisClient *redis.Client) http.Handler {
+func KeyCountHandler(redisClient *redis.Client, key string) http.Handler {
 	return &keyCountHandler{
 		RedisClient: redisClient,
+		KeyName:     key,
 	}
 }
